@@ -1,0 +1,14 @@
+services:
+  # create mongo db service with name of mongodb
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.4.28
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongovm:/data/db
+
+volumes:
+  mongovm:
+    name: mongovm
