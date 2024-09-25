@@ -5,7 +5,7 @@ export type AdminDocument = HydratedDocument<Admin>;
 
 @Schema()
 export class Admin {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ required: true })
@@ -14,16 +14,19 @@ export class Admin {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true, default: [] })
+  @Prop({ default: null})
+  avatar: string;
+
+  @Prop({ default: [] })
   roles: string[];
 
-  @Prop({ required: true, default: null })
+  @Prop({ default: null })
   forgetPasswordToken: string;
 
-  @Prop({ required: true, default: null })
+  @Prop({ default: null })
   forgetPasswordTokenExpiry: Date;
 
-  @Prop({ required: true, default: false })
+  @Prop({ default: false })
   changePassword: boolean;
 }
 
