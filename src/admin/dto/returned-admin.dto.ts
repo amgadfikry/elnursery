@@ -1,8 +1,13 @@
 import {IsString, IsOptional, IsArray, IsEmail} from 'class-validator';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { ObjectId } from 'mongoose';
 
 export class ReturnedAdminDto {
+	@ApiProperty()
+	@Expose()
+	_id: any;
+
 	@ApiProperty()
 	@IsEmail()
 	@Expose()
@@ -13,13 +18,13 @@ export class ReturnedAdminDto {
 	@Expose()
 	name: string;
 
-	@ApiProperty({ example: ['roles strings', 'or empty list']})
+	@ApiProperty()
 	@IsArray()
 	@IsOptional()
 	@Expose()
 	roles?: string[];
 
-	@ApiProperty({ example: 'url or null' })
+	@ApiProperty()
 	@IsString()
 	@IsOptional()
 	@Expose()

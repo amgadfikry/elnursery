@@ -4,7 +4,6 @@ import { map } from 'rxjs/operators';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
-@Injectable()
 export class TransformInterceptor<T> implements NestInterceptor {
   constructor(private readonly dtoClass: new () => T) {}
 

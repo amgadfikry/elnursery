@@ -8,6 +8,7 @@ import { AppModule } from './app.module';
 import { SwaggerModule } from '@nestjs/swagger';
 import { swaggerConfig } from './config/swagger.config';
 import { ValidationPipe } from '@nestjs/common';
+import { GlobalExceptionsFilter } from './common/filters/global-exception.filter';
 
 // This is the entry point of the application. It uses the NestFactory class to create a new Nest application instance.
 async function bootstrap() {
@@ -22,6 +23,10 @@ async function bootstrap() {
     transform: true, // Automatically transform payloads to DTO instances
     whitelist: true, // Strip properties that are not in the DTO
   }));
+
+  // Apply the global exception filter
+  app.useGlobalFilters(new GlobalExceptionsFilter());
+  
   await app.listen(3000);
 }
 
