@@ -1,20 +1,23 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-@Catch()  // This will catch all exceptions in the app
+// GlobalExceptionsFilter class to catch all exceptions and format them as JSON responses
+@Catch()
 export class GlobalExceptionsFilter implements ExceptionFilter {
+  // Catch method to handle exceptions and format them as JSON responses
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();  // Switch context to HTTP, could be WebSocket or RPC
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
+    const response = ctx.getResponse<Response>(); // Get the response object
+    const request = ctx.getRequest<Request>(); // Get the request object
 
-    // Check if it's an instance of HttpException (known HTTP error)
+    // Check if it's an instance of HttpException (known HTTP error) or a generic exception
+    // If it's an HttpException, get the status code, otherwise default to 500 Internal Server Error
     const status =
       exception instanceof HttpException
         ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;  // Default to 500 Internal Server Error
+        : HttpStatus.INTERNAL_SERVER_ERROR; 
 
-    // Build the error response
+    // Build the error response object from ErrorResponseDto
     const errorResponse = {
       statusCode: status,
       error: exception instanceof HttpException
@@ -25,7 +28,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
       method: request.method,
       message:
         exception instanceof HttpException
-          ? Array.isArray(exception.getResponse()['message']) ?
+          ? Array.isArray(exception.getResponse()['message']) ? //
             exception.getResponse()['message'].join(', ') : exception.getResponse()['message']  // HttpException has built-in messages
           : 'Internal server error',  // Fallback message
     };

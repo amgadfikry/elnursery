@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Admin, AdminSchema } from './schemas/admin.schema';
 
 @Module({
+  // Import the Admin model and schema into the AdminModule
   imports: [
     MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema }]),
   ],

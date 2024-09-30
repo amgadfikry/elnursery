@@ -2,12 +2,15 @@
 import { IsEmail, IsString, IsNotEmpty, IsOptional, IsArray, MinLength, MaxLength, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
+// Data transfer object for creating a new admin
 export class CreateAdminDto {
+  // Unique email address of admin
 	@ApiProperty({ example: 'email@example.com', description: 'Unique email address of admin'})
 	@IsEmail({}, { message: 'Email must be a valid email address' })
 	@IsNotEmpty()
 	email: string;
 
+  // Password of admin account
 	@ApiProperty({
 		example: 'AbcdefG@22',
 		description: 'Password must be at least 8 character, not more than 20 character,\
@@ -23,11 +26,13 @@ export class CreateAdminDto {
 	@IsNotEmpty()
 	password: string;
 
+  // Full name of admin
 	@ApiProperty({ example: 'John Doe', description: 'Full name of admin'})
 	@IsString({ message: 'Name must be a string' })
 	@IsNotEmpty()
 	name: string;
 
+  // Roles of admin
 	@ApiProperty({ example: ['organizer', 'groupName'], description: 'Roles of admin as organizer or name of group controll them'})
 	@IsArray({ message: 'Roles must be an array of strings' })
 	@IsOptional()

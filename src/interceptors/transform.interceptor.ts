@@ -3,6 +3,15 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { plainToInstance } from 'class-transformer';
 
+/* This interceptor is used to transform the response data to the DTO class instance
+    that is passed to it.
+    ATTRIBUTES:
+    - dtoClass: The DTO class that the response data will be transformed to.
+    METHODS:
+    - intercept: This method is used to transform the response data to the DTO class instance
+      using the class-transformer's plainToInstance method and return the transformed data
+      if it's an array or a single object it will be transformed accordingly.
+*/
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor {
   constructor(private readonly dtoClass: new () => T) {}
