@@ -13,6 +13,7 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Post()
+  @UseInterceptors(new TransformInterceptor(ReturnedAdminDto))
   @ApiOperation({ summary: 'Create a new admin account' })
   @ApiResponse({ status: 200, description: 'Successful create a new admin record.', type: ReturnedAdminDto })
   async create(@Body() createAdminDto: CreateAdminDto): Promise<ReturnedAdminDto> {

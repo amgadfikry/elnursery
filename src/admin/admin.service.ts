@@ -10,7 +10,7 @@ import { ReturnedAdminDto } from './dto/returned-admin.dto';
 export class AdminService {
   constructor(@InjectModel(Admin.name) private adminModel: Model<AdminDocument>) {}
 
-  async create(createAdminDto: CreateAdminDto): Promise<ReturnedAdminDto> {
+  async create(createAdminDto: CreateAdminDto): Promise<Admin> {
     const newAdmin = new this.adminModel(createAdminDto);
     return await newAdmin.save();
   }
