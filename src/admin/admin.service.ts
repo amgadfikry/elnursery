@@ -1,10 +1,8 @@
 import { Injectable, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import { Admin, AdminDocument } from './schemas/admin.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { ReturnedAdminDto } from './dto/returned-admin.dto';
 
 /* Admin Service with methods for CRUD operations
     Attributes:
@@ -13,7 +11,6 @@ import { ReturnedAdminDto } from './dto/returned-admin.dto';
       -create: Create a new admin account
       -findAll: Get all admins records
       -findOne: Get admin by id
-      -update: Update admin by id
       -remove: Delete admin by id
 */
 @Injectable()
@@ -29,7 +26,7 @@ export class AdminService {
         - ConflictException: If admin with the email already exist
         - InternalServerErrorException: An error occurred while creating the admin
   */
-  async create(createAdminDto: CreateAdminDto): Promise<ReturnedAdminDto> {
+  async create(createAdminDto: CreateAdminDto): Promise<Admin> {
     try {
       const newAdmin = new this.adminModel(createAdminDto);
       return await newAdmin.save();
@@ -47,21 +44,38 @@ export class AdminService {
       Errors:
         - InternalServerErrorException: An error occurred while Getting the list of admins
   */
-  async findAll(): Promise<ReturnedAdminDto[]> {
+  async findAll(): Promise<Admin[]> {
     try {
       const admins = await this.adminModel.find().exec();
+      console.log(admins)
       return admins;
     } catch (error) {
       throw new InternalServerErrorException('An Error occurred while Getting the list of admins');
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} admin`;
-  }
-
-  update(id: number, updateAdminDto: UpdateAdminDto) {
-    return `This action updates a #${id} admin`;
+  /* Get admin by id and return the admin details
+      Parameters:
+        - id: admin id to get the admin details
+      Returns:
+        - admin details in ReturnedAdminDto format
+      Errors:
+        - NotFoundException: If admin with the id not found
+        - InternalServerErrorException: An error occurred while Getting the admin details
+  */
+  async findOne(id: string): Promise<Admin> {
+    try {
+      const admin = await this.adminModel.findById(id).exec();
+      if (!admin) {
+        throw new NotFoundException(`Admin with this ID ${id} not found`);
+      }
+      return admin;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('An Error occurred while Getting the admin details');
+    }
   }
 
   /* Delete admin by id
@@ -75,13 +89,15 @@ export class AdminService {
   */
   async remove(id: string): Promise<{ message: string }> {
     try {
-      const result = await this.adminModel.deleteOne({ _id: id});
+      const result = await this.adminModel.deleteOne({ _id: id }).exec();
       if (result.deletedCount === 0) {
         throw new NotFoundException(`Admin with this ID ${id} not found`)
       }
       return { message: 'Successfully deleted admin from records' };
     } catch (error) {
-      console.error(error)
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new InternalServerErrorException('An Error occurred while delete admin record');
     }
   }

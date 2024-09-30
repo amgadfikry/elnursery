@@ -33,7 +33,7 @@ export class CreateAdminDto {
 	name: string;
 
   // Roles of admin
-	@ApiProperty({ example: ['organizer', 'groupName'], description: 'Roles of admin as organizer or name of group controll them'})
+	@ApiProperty({ example: ['organizer', 'groupName'], description: 'Optional roles of admin as organizer or name of group controll them'})
 	@IsArray({ message: 'Roles must be an array of strings' })
 	@IsOptional()
 	roles?: string[];

@@ -1,13 +1,15 @@
 import {IsString, IsOptional, IsArray, IsEmail} from 'class-validator';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 // Data transfer object for returning an admin
 export class ReturnedAdminDto {
   // Unique ID of the admin
 	@ApiProperty()
+	@IsString()
+  @Transform(({ value }) => value.toString())
 	@Expose()
-	_id: any;
+  id: string;
 
   // Unique email address of admin
 	@ApiProperty()
