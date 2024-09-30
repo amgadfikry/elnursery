@@ -10,6 +10,7 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { swaggerConfig } from './config/swagger.config';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionsFilter } from './common/filters/global-exception.filter';
+import * as cookieParser from 'cookie-parser';
 
 // This is the entry point of the application. It uses the NestFactory class to create a new Nest application instance.
 async function bootstrap() {
@@ -28,6 +29,16 @@ async function bootstrap() {
 
   // Apply the global exception filter that formats exceptions as JSON responses
   app.useGlobalFilters(new GlobalExceptionsFilter());
+
+  // Enable cookie parsing
+  app.use(cookieParser());
+
+  // Enable CORS for all routes
+  app.enableCors({
+    // Allow all origins
+    origin: process.env.CORS_ORIGIN || true,
+    credentials: true,
+  });
   
   // Start the application on port 3000
   await app.listen(3000);

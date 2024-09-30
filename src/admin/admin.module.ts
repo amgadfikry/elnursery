@@ -14,5 +14,6 @@ import { PasswordModule } from 'src/password/password.module';
   ],
   controllers: [AdminController],
   providers: [AdminService],
+  exports: [MongooseModule],
 })
 export class AdminModule {}
