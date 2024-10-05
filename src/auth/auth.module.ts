@@ -18,5 +18,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
   ],
   controllers: [AuthController],
   providers: [AuthService],
+  exports: [JwtModule],
 })
 export class AuthModule {}

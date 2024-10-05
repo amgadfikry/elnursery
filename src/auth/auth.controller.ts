@@ -4,6 +4,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorResponses } from 'src/common/decorators/api-error-response.decorator';
 import { LoginDto } from './dto/login.dto';
 import { Response } from 'express';
+import { Public } from '../common/decorators/public-guard.decorator';
 
 /* AuthController class that contains routes for authentication
     Routes:
@@ -16,6 +17,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   // POST /auth/login/:type - login and set token in cookie
+  @Public() // Set the route as public
   @Post('login/:type')
   @ApiOperation({ summary: 'Login and set token in cookie' })
   @ApiResponse({ status: 200, description: 'Login successful' })
@@ -24,8 +26,8 @@ export class AuthController {
     const token = await this.authService.login(loginDto, type);
     res.cookie('token', token, {
         httpOnly: true,
-        // secure: process.env.NODE_ENV === 'production', // set secure to true in production
-        sameSite: 'none', // set sameSite to none for cross-site requests
+        secure: process.env.NODE_ENV === 'production', // set secure to true in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // set sameSite to none in production
     });
     return res.status(200).send({ message: 'Login successful' });
   }

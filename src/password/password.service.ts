@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import * as generator from 'generate-password';
 
 // This service is responsible for hashing passwords, changing passwords, and resetting passwords.
 @Injectable()
@@ -30,6 +31,25 @@ export class PasswordService {
   async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
     try {
       return await bcrypt.compare(password, hashedPassword);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  /* generateAndHashPassword is a method that generates a random password and hashes it.
+      Returns:
+        - hashed password: string
+  */
+  async generateAndHashPassword(): Promise<string> {
+    try {
+      const password = generator.generate({
+        length: 10,
+        numbers: true,
+        symbols: true,
+        uppercase: true,
+        excludeSimilarCharacters: true,
+      });
+      return await this.hashPassword(password);
     } catch (error) {
       throw new Error(error);
     }

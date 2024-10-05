@@ -32,8 +32,10 @@ export class AdminService {
   */
   async create(createAdminDto: CreateAdminDto): Promise<Admin> {
     try {
+      // Hash the password before saving the admin
       const hashedPassword = await this.passwordService.hashPassword(createAdminDto.password);
       createAdminDto.password = hashedPassword;
+      
       const newAdmin = new this.adminModel(createAdminDto);
       return await newAdmin.save();
     } catch (error) {
