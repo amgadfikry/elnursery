@@ -5,11 +5,12 @@ import { ApiProperty } from '@nestjs/swagger';
 // Data transfer object for creating a new User
 export class CreateUserDto {
   // Unique email address of User
-	@ApiProperty({ example: 'email@example.com', description: 'Unique email address of user'})
+	@ApiProperty({ example: 'dr.amgad_sh92@yahoo.com', description: 'Unique email address of user'})
 	@IsEmail({}, { message: 'Email must be a valid email address' })
 	@IsNotEmpty()
 	email: string;
 
+  /*
   // Password of user account
 	@ApiProperty({
 		example: 'AbcdefG@22',
@@ -23,9 +24,10 @@ export class CreateUserDto {
 	@Matches(/(?=.*[a-z])/, { message: 'Password must contain at least one lowercase letter' })
 	@Matches(/(?=.*\d)/, { message: 'Password must contain at least one number' })
 	@Matches(/(?=.*[@$!%*?&])/, { message: 'Password must contain at least one special character' })
-	@IsNotEmpty()
-	password: string;
-
+  @IsOptional()
+	password?: string;
+  */
+  
   // Full name of user
 	@ApiProperty({ example: 'John Doe', description: 'Full name of user'})
 	@IsString({ message: 'Name must be a string' })
@@ -35,8 +37,9 @@ export class CreateUserDto {
   // Class of user
   @ApiProperty({ example: 'Class 1', description: 'Class of user'})
   @IsString({ message: 'Class must be a string' })
+  @IsOptional()
   @IsNotEmpty()
-  class: string;
+  class?: string;
 
   // Number of children
 	@ApiProperty({ example: 2, description: 'Number of children of user with default value of 1'})

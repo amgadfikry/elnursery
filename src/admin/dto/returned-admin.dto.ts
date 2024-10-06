@@ -1,4 +1,4 @@
-import {IsString, IsOptional, IsArray, IsEmail} from 'class-validator';
+import {IsString, IsOptional, IsArray, IsEmail, IsBoolean, IsDate } from 'class-validator';
 import { Expose, Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -36,4 +36,11 @@ export class ReturnedAdminDto {
 	@IsOptional()
 	@Expose()
 	avatar?: string;
+
+  // Confirmpassword
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  @Expose()
+  changePassword?: boolean;
 }

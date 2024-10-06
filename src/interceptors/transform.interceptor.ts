@@ -14,6 +14,7 @@ import { plainToInstance } from 'class-transformer';
 */
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor {
+  // Constructor to initialize the DTO class
   constructor(private readonly dtoClass: new () => T) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<T | T[]> {

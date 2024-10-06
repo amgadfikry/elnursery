@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { PasswordService } from 'src/password/password.service';
 import { User, UserDocument } from './schemas/user.schema';
+import { EmailService } from 'src/common/email.service';
 
 /* User Service with methods for CRUD operations
     Attributes:
@@ -22,6 +23,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly passwordService: PasswordService,
+    private readonly emailService: EmailService,
   ) {}
 
   /* create method to create a new user account
@@ -36,13 +38,15 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       // generate a random password for the user account
-      const password = await this.passwordService.generateAndHashPassword();
-      // assign the generated password to the user object
-      createUserDto.password = password;
+      const password = this.passwordService.generateRandomPassword();
+      const hashPassword = await this.passwordService.hashPassword(password);
       // create a new user object
-      const createdUser = new this.userModel(createUserDto);
-      // save the user object
-      return await createdUser.save();
+      const userData = { ...createUserDto, password: hashPassword };
+      const newUser = new this.userModel(userData);
+      const createdUser = await newUser.save();
+      // send account credentials email to the user
+      await this.emailService.sendAccountCredentials(createdUser.name, createdUser.email, password);
+      return createdUser;
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException('User already exists');

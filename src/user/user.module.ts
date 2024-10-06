@@ -4,6 +4,7 @@ import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
 import { PasswordModule } from 'src/password/password.module';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   // import user model and schema into the user module
@@ -11,6 +12,7 @@ import { PasswordModule } from 'src/password/password.module';
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     PasswordModule,
+    CommonModule,
   ],
   controllers: [UserController],
   providers: [UserService],

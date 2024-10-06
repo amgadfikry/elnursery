@@ -36,23 +36,18 @@ export class PasswordService {
     }
   }
 
-  /* generateAndHashPassword is a method that generates a random password and hashes it.
+  /* generateRandomPassword is a method that generates a random password using the generate-password library.
       Returns:
-        - hashed password: string
+        - random password: string
   */
-  async generateAndHashPassword(): Promise<string> {
-    try {
-      const password = generator.generate({
-        length: 10,
-        numbers: true,
-        symbols: true,
-        uppercase: true,
-        excludeSimilarCharacters: true,
-      });
-      return await this.hashPassword(password);
-    } catch (error) {
-      throw new Error(error);
-    }
+  generateRandomPassword(): string {
+    const password = generator.generate({
+      length: 10,
+      numbers: true,
+      symbols: true,
+      uppercase: true,
+      excludeSimilarCharacters: true,
+    });
+    return password;
   }
-
 }

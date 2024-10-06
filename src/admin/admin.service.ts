@@ -4,6 +4,7 @@ import { Admin, AdminDocument } from './schemas/admin.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { PasswordService } from 'src/password/password.service';
+import { EmailService } from 'src/common/email.service';
 
 /* Admin Service with methods for CRUD operations
     Attributes:
@@ -19,6 +20,7 @@ export class AdminService {
   constructor(
     @InjectModel(Admin.name) private adminModel: Model<AdminDocument>,
     private readonly passwordService: PasswordService,
+    private readonly emailService: EmailService,
   ) {}
 
   /* Create a new admin account and return the created admin
@@ -32,14 +34,17 @@ export class AdminService {
   */
   async create(createAdminDto: CreateAdminDto): Promise<Admin> {
     try {
-      // Hash the password before saving the admin
-      const hashedPassword = await this.passwordService.hashPassword(createAdminDto.password);
-      createAdminDto.password = hashedPassword;
-      
-      const newAdmin = new this.adminModel(createAdminDto);
-      return await newAdmin.save();
+      // generate a random password for the admin account
+      const password = this.passwordService.generateRandomPassword();
+      const hashPassword = await this.passwordService.hashPassword(password);
+      // create a new admin object and save it
+      const adminData = { ...createAdminDto, password: hashPassword };
+      const newAdmin = new this.adminModel(adminData);
+      const createdAdmin = await newAdmin.save();
+      // send account credentials email to the admin
+      await this.emailService.sendAccountCredentials(createAdminDto.name, createAdminDto.email, password);
+      return createdAdmin;
     } catch (error) {
-      console.error(error);
       if (error.code === 11000) {
         throw new ConflictException("Admin with this email already exist");
       }
@@ -58,7 +63,6 @@ export class AdminService {
       const admins = await this.adminModel.find().exec();
       return admins;
     } catch (error) {
-      console.error(error);
       throw new InternalServerErrorException('An Error occurred while Getting the list of admins');
     }
   }
@@ -80,7 +84,6 @@ export class AdminService {
       }
       return admin;
     } catch (error) {
-      console.error(error);
       if (error instanceof NotFoundException) {
         throw error;
       }
@@ -105,7 +108,6 @@ export class AdminService {
       }
       return { message: 'Successfully deleted admin from records' };
     } catch (error) {
-      console.error(error);
       if (error instanceof NotFoundException) {
         throw error;
       }

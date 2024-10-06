@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsNumber, IsArray, IsOptional } from 'class-validator';
+import { IsEmail, IsString, IsNumber, IsArray, IsOptional, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
 import { ObjectId } from 'mongoose';
@@ -12,13 +12,13 @@ export class ReturnedUserDto {
 	@Expose()
   id: string;
 
-  // Unique email address of admin
+  // Unique email address of user
 	@ApiProperty()
 	@IsEmail()
 	@Expose()
 	email: string;
 
-  // Full name of admin
+  // Full name of user
 	@ApiProperty()
 	@IsString()
 	@Expose()
@@ -31,13 +31,6 @@ export class ReturnedUserDto {
   @Expose()
   children?: number;
 
-  // Class of user
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  @Expose()
-  class: string;
-
   // list of childern names and ids of children in children collection
   @ApiProperty()
   @IsArray()
@@ -45,10 +38,38 @@ export class ReturnedUserDto {
   @Expose()
   childrenList?: { name: string, id: string | ObjectId }[];
 
+  // Class of user
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Expose()
+  class?: string;
+
   // Avatar URL of admin
 	@ApiProperty()
 	@IsString()
 	@IsOptional()
 	@Expose()
 	avatar?: string;
+
+  // Confirmpassword
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  @Expose()
+  changePassword?: boolean;
+
+  // isactive boolean to check if user is active
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  @Expose()
+  isActive?: boolean;
+
+  // lastActivatedDate date to check when user was last activated
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Expose()
+  lastActivatedDate?: string;
 }

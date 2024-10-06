@@ -23,8 +23,8 @@ export class User {
   @Prop({ default: null})
   avatar: string;
 
-  // Class of user
-  @Prop({ required: true })
+  // Class of user with default value date of day of creation dd-mm-yyyy
+  @Prop({ default: new Date().toLocaleDateString() })
   class: string;
 
   // Number of children
@@ -35,6 +35,14 @@ export class User {
   // Is List of child object form of name of child and id of child string or objectID
   @Prop({ default: [] })
   childrenList: { name: string, id: string | ObjectId }[];
+
+  // isactive boolean to check if user is active
+  @Prop({ default: true })
+  isActive: boolean;
+
+  // lastActivatedDate date to check when user was last activated
+  @Prop({ default: new Date() })
+  lastActivatedDate: Date;
 
   // Token for email forgot password
   @Prop({ default: null })

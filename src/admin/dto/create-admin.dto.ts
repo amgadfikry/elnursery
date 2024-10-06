@@ -5,12 +5,12 @@ import { ApiProperty } from '@nestjs/swagger';
 // Data transfer object for creating a new admin
 export class CreateAdminDto {
   // Unique email address of admin
-	@ApiProperty({ example: 'email@example.com', description: 'Unique email address of admin'})
+	@ApiProperty({ example: 'dr.amgad_sh92@yahoo.com', description: 'Unique email address of admin'})
 	@IsEmail({}, { message: 'Email must be a valid email address' })
 	@IsNotEmpty()
 	email: string;
 
-  // Password of admin account
+  /*// Password of admin account
 	@ApiProperty({
 		example: 'AbcdefG@22',
 		description: 'Password must be at least 8 character, not more than 20 character,\
@@ -23,8 +23,9 @@ export class CreateAdminDto {
 	@Matches(/(?=.*[a-z])/, { message: 'Password must contain at least one lowercase letter' })
 	@Matches(/(?=.*\d)/, { message: 'Password must contain at least one number' })
 	@Matches(/(?=.*[@$!%*?&])/, { message: 'Password must contain at least one special character' })
-	@IsNotEmpty()
-	password: string;
+  @IsOptional()
+	password?: string;
+  */
 
   // Full name of admin
 	@ApiProperty({ example: 'John Doe', description: 'Full name of admin'})
