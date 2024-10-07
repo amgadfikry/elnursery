@@ -102,13 +102,24 @@ export class AdminService {
   */
   async remove(id: string): Promise<{ message: string }> {
     try {
+      // get the admin details by id to check if the admin exist
+      const user = await this.adminModel.findById(id).exec();
+      if (!user) {
+        throw new NotFoundException(`Admin with this ID ${id} not found`)
+      }
+      // check if the user is trying to delete the owner account
+      if (user.roles.includes('owner')) {
+        throw new ConflictException('Cannot delete owner account');
+      }
+      // delete the admin record
       const result = await this.adminModel.deleteOne({ _id: id }).exec();
       if (result.deletedCount === 0) {
         throw new NotFoundException(`Admin with this ID ${id} not found`)
       }
+      // return success message after deleting the admin
       return { message: 'Successfully deleted admin from records' };
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (error instanceof NotFoundException || error instanceof ConflictException) {
         throw error;
       }
       throw new InternalServerErrorException('An Error occurred while delete admin record');

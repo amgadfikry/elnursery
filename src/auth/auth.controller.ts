@@ -31,4 +31,18 @@ export class AuthController {
     });
     return res.status(200).send({ message: 'Login successful' });
   }
+
+  // POST /auth/logout - logout and clear token in cookie
+  @Post('logout')
+  @ApiOperation({ summary: 'Logout and clear token in cookie' })
+  @ApiResponse({ status: 200, description: 'Logout successful' })
+  @ApiErrorResponses([400, 401, 404, 500])
+  async logout(@Res() res: Response) {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // set secure to true in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // set sameSite to none in production
+    });
+    return res.status(200).send({ message: 'Logout successful' });
+  }
 }

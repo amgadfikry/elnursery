@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -11,7 +11,7 @@ import { CommonModule } from 'src/common/common.module';
   // Import PasswordModule into the AdminModule
   imports: [
     MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema }]),
-    PasswordModule,
+    forwardRef(() => PasswordModule),
     CommonModule,
   ],
   controllers: [AdminController],
