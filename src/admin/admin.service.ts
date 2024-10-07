@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { Admin, AdminDocument } from './schemas/admin.schema';
 import { Model } from 'mongoose';
@@ -99,6 +99,7 @@ export class AdminService {
       Errors:
         - NotFoundException: If admin with the id not found
         - InternalServerErrorException: An error occurred while delete admin record
+        - BadRequestException: You cannot delete the owner account
   */
   async remove(id: string): Promise<{ message: string }> {
     try {
@@ -109,7 +110,7 @@ export class AdminService {
       }
       // check if the user is trying to delete the owner account
       if (user.roles.includes('owner')) {
-        throw new ConflictException('Cannot delete owner account');
+        throw new BadRequestException('You cannot delete the owner account');
       }
       // delete the admin record
       const result = await this.adminModel.deleteOne({ _id: id }).exec();
@@ -119,7 +120,7 @@ export class AdminService {
       // return success message after deleting the admin
       return { message: 'Successfully deleted admin from records' };
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ConflictException) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
       throw new InternalServerErrorException('An Error occurred while delete admin record');

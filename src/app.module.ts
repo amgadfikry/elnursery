@@ -39,7 +39,7 @@ export class AppModule implements OnModuleInit {
       await this.adminService.create({
         email: 'dr.amgad_sh92@yahoo.com',
         name: 'Amgad Fikry Mohamed',
-        roles: ["Owner"],
+        roles: ["owner"],
       });
       console.log('Admin account created successfully');
     } catch (error) {

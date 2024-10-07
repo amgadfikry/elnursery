@@ -36,7 +36,28 @@ export class EmailService {
       template: "account_credentials",
       'h:X-Mailgun-Variables': JSON.stringify({ name, email, password }),
     };
-    return this.sendEmail(data);
+    return await this.sendEmail(data);
+  }
+
+  /* Send password reset email
+      Parameters:
+      - name: name of the user
+      - email: email of the user
+      - code: password reset token
+      Returns:
+        - Mailgun response
+      Errors:
+        - Failed to send password reset email
+  */
+  async sendPasswordResetEmail(name: string, email: string, code: number): Promise<mailgun.messages.SendResponse> {
+    const data = {
+      from: this.sender,
+      to: email,
+      subject: 'Password Reset',
+      template: "reset_password",
+      'h:X-Mailgun-Variables': JSON.stringify({ name, code }),
+    };
+    return await this.sendEmail(data);
   }
 
   /* sendEmail function to send email using Mailgun
