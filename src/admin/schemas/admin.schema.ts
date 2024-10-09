@@ -29,7 +29,7 @@ export class Admin {
 
   // Token for email forgot password
   @Prop({ default: null })
-  forgetPasswordToken: string;
+  forgetPasswordToken: number;
 
   // Expiry date for email forgot password token
   @Prop({ default: null })

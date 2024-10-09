@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsNumber, IsArray, IsOptional, IsBoolean } from 'class-validator';
+import { IsEmail, IsString, IsNumber, IsArray, IsOptional, IsBoolean, IsDate } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
 import { ObjectId } from 'mongoose';
@@ -68,8 +68,8 @@ export class ReturnedUserDto {
 
   // lastActivatedDate date to check when user was last activated
   @ApiProperty()
-  @IsString()
+  @IsDate()
   @IsOptional()
   @Expose()
-  lastActivatedDate?: string;
+  lastActivatedDate?: Date;
 }

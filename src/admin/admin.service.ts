@@ -80,7 +80,7 @@ export class AdminService {
     try {
       const admin = await this.adminModel.findById(id).exec();
       if (!admin) {
-        throw new NotFoundException(`Admin with this ID ${id} not found`);
+        throw new NotFoundException(`Admin not found`);
       }
       return admin;
     } catch (error) {
@@ -106,7 +106,7 @@ export class AdminService {
       // get the admin details by id to check if the admin exist
       const user = await this.adminModel.findById(id).exec();
       if (!user) {
-        throw new NotFoundException(`Admin with this ID ${id} not found`)
+        throw new NotFoundException(`Admin not found`);
       }
       // check if the user is trying to delete the owner account
       if (user.roles.includes('owner')) {
@@ -115,7 +115,7 @@ export class AdminService {
       // delete the admin record
       const result = await this.adminModel.deleteOne({ _id: id }).exec();
       if (result.deletedCount === 0) {
-        throw new NotFoundException(`Admin with this ID ${id} not found`)
+        throw new NotFoundException(`Admin not found`);
       }
       // return success message after deleting the admin
       return { message: 'Successfully deleted admin from records' };

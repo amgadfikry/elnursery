@@ -8,6 +8,7 @@ import { Model } from 'mongoose';
 import { Admin, AdminDocument } from 'src/admin/schemas/admin.schema';
 import { User, UserDocument } from 'src/user/schemas/user.schema';
 import { EmailService } from '../common/email.service';
+import { ChangePasswordTokenDto } from './dto/change-password-token.dto';
 
 // This service is responsible for hashing passwords, changing passwords, and resetting passwords.
 @Injectable()
@@ -18,6 +19,7 @@ export class PasswordService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly emailService: EmailService,
   ) {}
+
   /* hashPassword is a method that takes a password and hashes it using bcrypt.
       Parameters:
       - password: string
@@ -132,6 +134,45 @@ export class PasswordService {
         throw error;
       }
       throw new InternalServerErrorException("Couldn't reset password");
+    }
+  }
+
+  /* changePasswordByToken is a method that takes a user's email, code, and new password and changes the password.
+      Parameters:
+      - email: string
+      - code: number
+      - newPassword: string
+      - userType: string
+      Returns:
+        - "password changed successfully" message: string
+      Errors:
+        - NotFoundException: if the user is not found
+        - BadRequestException: if the code is incorrect
+        - InternalServerErrorException: if an error occurs
+  */
+  async changePasswordByToken(email: string, changePasswordTokenDto: ChangePasswordTokenDto, userType: string): Promise<{ message: string }> {
+    try {
+      const {code, newPassword} = changePasswordTokenDto;
+      // Check if the userType is admin or user and get the model accordingly
+      const model: Model<AdminDocument | UserDocument> = userType === 'admin' ? this.adminModel : this.userModel;
+      // Find the user by email and check if the user exists
+      const user = await model.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      // Check if the code is correct or code is expired
+      if (user.forgetPasswordToken !== code || user.forgetPasswordTokenExpiry < new Date()) {
+        throw new BadRequestException('Code is incorrect or expired');
+      }
+      // Hash the new password and update the user's password
+      const hashedPassword = await this.hashPassword(newPassword);
+      await model.findOneAndUpdate({ email }, { password: hashedPassword, forgetPasswordToken: null, forgetPasswordTokenExpiry: null });
+      return { message: 'Password changed successfully' };
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException("Couldn't change password");
     }
   }
 }

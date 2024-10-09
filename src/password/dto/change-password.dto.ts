@@ -29,7 +29,7 @@ export class ChangePasswordDto {
   // confirm new password
   @ApiProperty({ example: 'AbcdefG@22', description: 'Must match the new password', })
   @IsString({ message: 'Password must be a string' })
-  @Match('newPassword', { message: 'Passwords do not match' })
+  @Match('newPassword', { message: 'Passwords do not match' }) // custome decorator to match the new password with confirm password
   @IsNotEmpty()
   confirmPassword: string;
 }

@@ -59,3 +59,15 @@ export class User {
 
 // UserSchema constant to define the schema for the User collection
 export const UserSchema = SchemaFactory.createForClass(User);
+
+// Middleware to update the lastActivatedDate when isActive is updated from false to true
+UserSchema.pre<UserDocument>('findOneAndUpdate', function (next) {
+  // get the update object
+  const update = (this as any).getUpdate();
+  // Check if `isActive` is being updated from false to true
+  if (update.hasOwnProperty('isActive') && update.isActive === true) {
+    // Update the lastActivatedDate to the current date
+    update.lastActivatedDate = new Date();
+  }
+  next();
+});

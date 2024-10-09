@@ -1,6 +1,6 @@
 import { Injectable ,ConflictException, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserByAdminDto } from './dto/update-user-by-admin.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { PasswordService } from 'src/password/password.service';
@@ -19,7 +19,7 @@ import { EmailService } from 'src/common/email.service';
 */
 @Injectable()
 export class UserService {
-  // Inject the User model into the service and the PasswordService
+  // Inject the User model into the service, and the PasswordService and EmailService
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly passwordService: PasswordService,
@@ -56,19 +56,89 @@ export class UserService {
     }
   }
 
-  findAll() {
-    return `This action returns all user`;
+  /* Get all users with optional classCategory and return the list of users
+      Parameters:
+        - classCategory: Optional class category
+      Returns:
+        - list of users records in User format
+      Errors:
+        - InternalServerErrorException: An error occurred while Getting the list of users
+  */
+  async findAll(classCategory?: string): Promise<User[]> {
+    try {
+      const classData = classCategory ? { class: classCategory } : {};
+      const users = await this.userModel.find(classData).exec();
+      return users;
+    } catch (error) {
+      throw new InternalServerErrorException('An Error occurred while Getting the list of users');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  /* Get user by id and return the user details
+      Parameters:
+        - id: user id
+      Returns:
+        - user details in User format
+      Errors:
+        - NotFoundException: If user with the id does not exist
+        - InternalServerErrorException: An error occurred while Getting the user details
+  */
+  async findOne(id: string) : Promise<User> {
+    try {
+      const user = await this.userModel.findById(id).exec();
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException('An Error occurred while Getting the user details');
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  /* Update user by id
+      Parameters:
+        - id: user id
+        - updateUserDto: UpdateUserDto object
+      Returns:
+        - user details in User format
+  */
+  async update(id: string, updateUserByAdminDto: UpdateUserByAdminDto) {
+    try {
+      // find the user by id and update the user details
+      const updatedUser = await this.userModel.findByIdAndUpdate(id, updateUserByAdminDto, { new: true }).exec();
+      if (!updatedUser) {
+        throw new NotFoundException('User not found');
+      }
+      return updatedUser;
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException('User already exists');
+      }
+      throw new InternalServerErrorException('An Error occurred while Updating the user details');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  /* Delete user by id
+      Parameters:
+        - id: user id
+      Returns:
+        - message: string
+      Errors:
+        - NotFoundException: If user with the id does not exist
+        - InternalServerErrorException: An error occurred while Deleting the user
+  */
+async remove(id: string) : Promise<{ message: string }> {
+    try {
+      const user = await this.userModel.findByIdAndDelete(id).exec();
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return { message: 'User deleted successfully' };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('An Error occurred while Deleting the user');
+    }
   }
 }

@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Query, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UpdateUserByAdminDto } from './dto/update-user-by-admin.dto';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TransformInterceptor } from '../interceptors/transform.interceptor';
 import { ReturnedUserDto } from './dto/returned-user.dto';
 import { ApiErrorResponses } from 'src/common/decorators/api-error-response.decorator';
@@ -34,23 +34,44 @@ export class UserController {
     return await this.userService.create(createUserDto);
   }
 
+  // GET /user - get all users records
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  @ApiQuery({ name: 'classCategory', required: false }) // Query parameter for classCategory
+  @UseInterceptors(new TransformInterceptor(ReturnedUserDto)) // Transform the response to the ReturnedUserDto
+  @ApiOperation({ summary: 'Get all user records with optional class' })
+  @ApiResponse({ status: 200, description: 'Successful retrieval list of users records.', type: ReturnedUserDto })
+  @ApiErrorResponses([400, 401, 404, 500]) // Custom error responses Swagger decorator
+  async findAll(@Query('classCategory') classCategory?: string): Promise<User[]> {
+    return await this.userService.findAll(classCategory);
   }
 
+  // GET /user/:id - get user by id
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @ApiParam({ name: 'id', description: 'User ID', type: String, required: false }) // Path parameter for user id
+  @UseInterceptors(new TransformInterceptor(ReturnedUserDto)) // Transform the response to the ReturnedUserDto
+  @ApiOperation({ summary: 'Get user by id if admin and if user get own details without id' })
+  @ApiResponse({ status: 200, description: 'Successful retrieval of user record.', type: ReturnedUserDto })
+  @ApiErrorResponses([400, 401, 404, 500]) // Custom error responses Swagger decorator
+  async findOne(@Req() req: any, @Param('id') id?: string) : Promise<User> {
+    id = req.user.type === 'user' ? req.user._id : id;
+    console.log(id);
+    return await this.userService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @UseInterceptors(new TransformInterceptor(ReturnedUserDto)) // Transform the response to the ReturnedUserDto
+  @ApiOperation({ summary: 'Update user by id details by admin' })
+  @ApiResponse({ status: 200, description: 'Successful update of user record.', type: ReturnedUserDto })
+  @ApiErrorResponses([400, 401, 404, 500]) // Custom error responses Swagger decorator
+  async update(@Param('id') id: string, @Body() updateUserByAdminDto: UpdateUserByAdminDto) : Promise<User> {
+    return await this.userService.update(id, updateUserByAdminDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @ApiOperation({ summary: 'Delete user by id by admin' })
+  @ApiResponse({ status: 200, description: 'Successful deletion of user record.' })
+  @ApiErrorResponses([400, 401, 404, 500]) // Custom error responses Swagger decorator
+  async remove(@Param('id') id: string) : Promise<{ message: string }> {
+    return await this.userService.remove(id);
   }
 }
