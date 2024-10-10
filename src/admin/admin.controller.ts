@@ -6,6 +6,7 @@ import { ReturnedAdminDto } from './dto/returned-admin.dto';
 import { TransformInterceptor } from '../interceptors/transform.interceptor';
 import { ApiErrorResponses } from '../common/decorators/api-error-response.decorator';
 import { Admin } from './schemas/admin.schema';
+import { UserType } from 'src/common/decorators/userType-guard.decorator';
 
 /* Admin Controller with CRUD operations
     Attributes:
@@ -24,6 +25,7 @@ export class AdminController {
 
   // POST /admin - create a new admin account
   @Post()
+  @UserType('admin') // Check if the user type is admin
   @UseInterceptors(new TransformInterceptor(ReturnedAdminDto)) // Transform the response to the ReturnedAdminDto
   @ApiOperation({ summary: 'Create a new admin account' })
   @ApiResponse({ status: 200, description: 'Successful create a new admin record.', type: ReturnedAdminDto })
@@ -34,6 +36,7 @@ export class AdminController {
 
   // GET /admin - get all admins records
   @Get()
+  @UserType('admin') // Check if the user type is admin
   @UseInterceptors(new TransformInterceptor(ReturnedAdminDto)) // Transform the response to the ReturnedAdminDto
   @ApiOperation({ summary: 'Get all admins records' })
   @ApiResponse({ status: 200, description: 'Successful retrieval list of admins records.', type: ReturnedAdminDto })
@@ -44,6 +47,7 @@ export class AdminController {
 
   // GET /admin/:id - get admin by id
   @Get(':id')
+  @UserType('admin') // Check if the user type is admin
   @UseInterceptors(new TransformInterceptor(ReturnedAdminDto)) // Transform the response to the ReturnedAdminDto
   @ApiOperation({ summary: 'Get admin using id' })
   @ApiResponse({ status: 200, description: 'Successful retrieval of admin record.', type: ReturnedAdminDto })
@@ -54,6 +58,7 @@ export class AdminController {
 
   // DELETE /admin/:id - delete admin by id
   @Delete(':id')
+  @UserType('admin') // Check if the user type is admin
   @ApiOperation({ summary: 'Delete admin using id' })
   @ApiResponse({ status: 200, description: 'Successful delete admin from records.'})
   @ApiErrorResponses([400, 401, 404, 500])

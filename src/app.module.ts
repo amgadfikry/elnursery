@@ -22,9 +22,7 @@ import { CommonModule } from './common/common.module';
   ],
   controllers: [],
   providers: [
-    { provide: APP_GUARD, // Provide the AuthGuard as a global guard
-      useClass: AuthGuard,
-    },
+    { provide: APP_GUARD, useClass: AuthGuard },// Provide the AuthGuard as a global guard
     AdminService,
   ],
 })

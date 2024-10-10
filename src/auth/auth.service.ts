@@ -39,6 +39,7 @@ export class AuthService {
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
+      console.log(user);
       // check if password is valid and compare password with hashed password in the database
       const IsValidPassword = await this.passwordService.comparePassword(password, user.password);
       if (!IsValidPassword) {

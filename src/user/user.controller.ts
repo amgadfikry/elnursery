@@ -7,6 +7,7 @@ import { TransformInterceptor } from '../interceptors/transform.interceptor';
 import { ReturnedUserDto } from './dto/returned-user.dto';
 import { ApiErrorResponses } from 'src/common/decorators/api-error-response.decorator';
 import { User } from './schemas/user.schema';
+import { UserType } from 'src/common/decorators/userType-guard.decorator';
 
 /* User Controller with CRUD operations
     Attributes:
@@ -26,6 +27,7 @@ export class UserController {
 
   // POST /user - create a new user account
   @Post()
+  @UserType('admin') // Check if the user type is admin
   @UseInterceptors(new TransformInterceptor(ReturnedUserDto)) // Transform the response to the ReturnedUserDto
   @ApiOperation({ summary: 'Create a new user account' })
   @ApiResponse({ status: 200, description: 'Successful create a new user record.', type: ReturnedUserDto })
@@ -36,6 +38,7 @@ export class UserController {
 
   // GET /user - get all users records
   @Get()
+  @UserType('admin') // Check if the user type is admin
   @ApiQuery({ name: 'classCategory', required: false }) // Query parameter for classCategory
   @UseInterceptors(new TransformInterceptor(ReturnedUserDto)) // Transform the response to the ReturnedUserDto
   @ApiOperation({ summary: 'Get all user records with optional class' })
@@ -59,6 +62,7 @@ export class UserController {
   }
 
   @Patch(':id')
+  @UserType('admin') // Check if the user type is admin
   @UseInterceptors(new TransformInterceptor(ReturnedUserDto)) // Transform the response to the ReturnedUserDto
   @ApiOperation({ summary: 'Update user by id details by admin' })
   @ApiResponse({ status: 200, description: 'Successful update of user record.', type: ReturnedUserDto })
@@ -68,6 +72,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UserType('admin') // Check if the user type is admin
   @ApiOperation({ summary: 'Delete user by id by admin' })
   @ApiResponse({ status: 200, description: 'Successful deletion of user record.' })
   @ApiErrorResponses([400, 401, 404, 500]) // Custom error responses Swagger decorator
