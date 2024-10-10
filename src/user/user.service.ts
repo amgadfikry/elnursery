@@ -127,7 +127,7 @@ export class UserService {
         - NotFoundException: If user with the id does not exist
         - InternalServerErrorException: An error occurred while Deleting the user
   */
-async remove(id: string) : Promise<{ message: string }> {
+  async remove(id: string) : Promise<{ message: string }> {
     try {
       const user = await this.userModel.findByIdAndDelete(id).exec();
       if (!user) {
@@ -139,6 +139,26 @@ async remove(id: string) : Promise<{ message: string }> {
         throw error;
       }
       throw new InternalServerErrorException('An Error occurred while Deleting the user');
+    }
+  }
+
+  /* deactivateExpiredUsers method to deactivate users whose activation has expired
+    Parameters:
+      - minAgo: Date object
+    Returns:
+      - message: string
+  */
+  async deactivateExpiredUsers(dateAgo: Date) : Promise<{ message: string }> {
+    try {
+      // find users whose activation has expired and deactivate them
+      const users = await this.userModel.updateMany(
+        { isActive: true, lastActivatedDate: { $lte: dateAgo } },
+        { isActive: false }
+      ).exec();
+      // return message of number of users deactivated
+      return { message: `Number of users deactivated: ${users.modifiedCount}` };
+    } catch (error) {
+      throw new InternalServerErrorException('An Error occurred while deactivating users');
     }
   }
 }

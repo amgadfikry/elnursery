@@ -33,7 +33,15 @@ export class User {
 
   // list of childern names and ids of children in children collection
   // Is List of child object form of name of child and id of child string or objectID
-  @Prop({ default: [] })
+  // Validate childrenList length not excced  children number
+  @Prop({ default: [],
+    validate: {
+      validator: function(value: { name: string, id: string | ObjectId }[]) {
+        return value.length <= this.children;
+      },
+      message: 'Children list length should not exceed children number'
+    }
+  })
   childrenList: { name: string, id: string | ObjectId }[];
 
   // isactive boolean to check if user is active

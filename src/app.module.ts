@@ -9,16 +9,18 @@ import { APP_GUARD } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { AdminService } from './admin/admin.service';
 import { CommonModule } from './common/common.module';
+import { CronJobsModule } from './cron-jobs/cron-jobs.module';
 
 @Module({ 
   // Import the MongooseModule and AdminModule into the AppModule
   imports: [
     MongooseModule.forRoot(databaseConfig.uri),
     CommonModule,
+    CronJobsModule,
     AdminModule,
     PasswordModule,
     AuthModule,
-    UserModule
+    UserModule,
   ],
   controllers: [],
   providers: [
